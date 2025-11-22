@@ -1,0 +1,7 @@
+{
+  "launch": {
+    "configurations": [],
+    "compounds": []
+  },
+  "cmake.sourceDirectory": "C:/Flutter Projects/attendance/linux"
+}
