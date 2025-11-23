@@ -1,5 +1,5 @@
 import 'package:attendance/views/data/notifiers.dart';
-import 'package:attendance/views/pages/login_page.dart';
+import 'package:attendance/views/widget_tree.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -19,6 +19,7 @@ class WelcomePage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Lottie.asset('assets/lotties/loading.json', height: 300),
+                  SizedBox(width: double.infinity, height: 40),
                   FittedBox(
                     child: Text(
                       'Altamash Khan',
@@ -33,11 +34,11 @@ class WelcomePage extends StatelessWidget {
                   FilledButton(
                     onPressed: () {
                       selectedPageNotifier.value = 0;
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return LoginPage(title: 'Register');
+                            return WidgetTree();
                           },
                         ),
                       );
@@ -46,23 +47,6 @@ class WelcomePage extends StatelessWidget {
                       minimumSize: Size(double.infinity, 40),
                     ),
                     child: Text('Get Started'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      selectedPageNotifier.value = 0;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return LoginPage(title: 'Login');
-                          },
-                        ),
-                      );
-                    },
-                    style: FilledButton.styleFrom(
-                      minimumSize: Size(double.infinity, 40),
-                    ),
-                    child: Text('Login'),
                   ),
                 ],
               ),

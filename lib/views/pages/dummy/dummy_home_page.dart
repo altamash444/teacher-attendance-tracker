@@ -14,35 +14,35 @@ class DummyHomePage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: ColoredBox(
-              color: Colors.grey.shade800,
+              color: Colors.grey,
               child: SizedBox(width: double.infinity, height: 120),
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 20.0, bottom: 10),
             child: ColoredBox(
-              color: Colors.grey.shade800,
+              color: Colors.grey,
               child: SizedBox(width: double.infinity, height: 40),
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 25),
             child: ColoredBox(
-              color: Colors.grey.shade800,
+              color: Colors.grey,
               child: SizedBox(width: double.infinity, height: 80),
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 25),
             child: ColoredBox(
-              color: Colors.grey.shade800,
+              color: Colors.grey,
               child: SizedBox(width: double.infinity, height: 80),
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 25),
             child: ColoredBox(
-              color: Colors.grey.shade800,
+              color: Colors.grey,
               child: SizedBox(width: double.infinity, height: 80),
             ),
           ),
