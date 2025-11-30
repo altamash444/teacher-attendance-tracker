@@ -19,35 +19,3 @@ class KStrings {
   static const String val4 = 'Title is a Date';
   static const String val5 = 'Title is an Esperado';
 }
-
-class Names {
-  static final List<String> teacherNames = [
-    'Abu Bakar',
-    'Haroon Shaikh',
-    'Ismail Popatiya',
-    'Neha Momin',
-    'Saima Shaikh',
-    'Shahid Ansari',
-    'Yaseera Anware',
-  ];
-
-  static final List<String> subjectNames = [
-    'CN',
-    'CG',
-    'EVS',
-    'Java',
-    'Maths',
-    'Python',
-  ];
-
-  static final List<String> labNames = [
-    'M1',
-    'M2',
-    'L1',
-    'L2',
-    'L3',
-    'C1',
-    'C2',
-    'Main building',
-  ];
-}

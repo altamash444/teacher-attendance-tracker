@@ -1,8 +1,7 @@
-import 'dart:developer';
-
+import 'package:attendance/utils/fetch_data.dart';
+import 'package:attendance/views/data/notifiers.dart';
 import 'package:attendance/views/pages/dummy/dummy_home_page.dart';
 import 'package:attendance/views/widgets/teacher_card.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -10,107 +9,15 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future<List<(int percent, int total)>> getPercentForTeachers(
-      Future<List<String>> futureTeacherNames,
-    ) async {
-      try {
-        final teacherNames = await futureTeacherNames;
-        List<(int, int)> results = [];
-
-        for (final teacherName in teacherNames) {
-          // Fetch total lectures
-          QuerySnapshot totalLectures = await FirebaseFirestore.instance
-              .collection('lectures')
-              .where('teacher_id', isEqualTo: teacherName)
-              .get();
-
-          // Fetch present lectures
-          QuerySnapshot presentLectures = await FirebaseFirestore.instance
-              .collection('lectures')
-              .where('teacher_id', isEqualTo: teacherName)
-              .where('present', isEqualTo: true)
-              .get();
-
-          int total = totalLectures.docs.length;
-          int percent = 0;
-
-          if (total > 0) {
-            percent = ((presentLectures.docs.length / total) * 100).toInt();
-          }
-
-          results.add((percent, total));
-        }
-
-        return results;
-      } catch (e) {
-        log("Error: $e");
-        return [];
-      }
-    }
-
-    Future<int> getAverageAttendance() async {
-      try {
-        QuerySnapshot totalLectures = await FirebaseFirestore.instance
-            .collection('lectures')
-            .get();
-        QuerySnapshot totalPresentLectures = await FirebaseFirestore.instance
-            .collection('lectures')
-            .where('present', isEqualTo: true)
-            .get();
-        return (totalPresentLectures.docs.length /
-                totalLectures.docs.length *
-                100)
-            .toInt();
-      } catch (e) {
-        log('Error2: $e');
-        return 0;
-      }
-    }
-
-    Future<List<String>> getTeacherNames() async {
-      try {
-        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-            .collection('teachers')
-            .get();
-
-        List<String> names = [];
-
-        for (var doc in querySnapshot.docs) {
-          String? name = doc.get('name');
-          if (name != null) {
-            names.add(name);
-          }
-        }
-        return names;
-      } catch (e) {
-        log('Error3: $e');
-        return [];
-      }
-    }
-
-    Future<List<String>> getTeacherId() async {
-      try {
-        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-            .collection('teachers')
-            .get();
-
-        List<String> ids = [];
-
-        for (var doc in querySnapshot.docs) {
-          ids.add(doc.id);
-        }
-        return ids;
-      } catch (e) {
-        log('Error4: $e');
-        return [];
-      }
-    }
-
     Future<List<dynamic>> fetchAllData() async {
       return Future.wait([
         getAverageAttendance(),
         getPercentForTeachers(getTeacherId()),
         getTeacherNames(),
+        getLabNames(),
+        getSubjectNames(),
+        getCurrentSem(),
+        getTeacherId(),
       ]);
     }
 
@@ -129,6 +36,24 @@ class HomePage extends StatelessWidget {
         int averageAttendance = snapshot.data?[0];
         List<(int, int)> percentAndTotal = snapshot.data?[1];
         List<String> teacherNames = snapshot.data?[2];
+        for (int i = 0; i < teacherNames.length; i++) {
+          if (teacherNamesNotifier.value.length != teacherNames.length) {
+            teacherNamesNotifier.value.add(teacherNames[i]);
+          }
+        }
+        List<String> labNames = snapshot.data?[3];
+        for (int i = 0; i < labNames.length; i++) {
+          if (labNamesNotifier.value.length != labNames.length) {
+            labNamesNotifier.value.add(labNames[i]);
+          }
+        }
+        List<String> subjectNames = snapshot.data?[4];
+        for (int i = 0; i < subjectNames.length; i++) {
+          if (labSubjectNotifier.value.length != subjectNames.length) {
+            labSubjectNotifier.value.add(subjectNames[i]);
+          }
+        }
+        currentSemNotifier.value = snapshot.data?[5];
 
         return SingleChildScrollView(
           child: SizedBox(
@@ -168,66 +93,31 @@ class HomePage extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(width: 10),
-                            Column(
-                              children: [
-                                TeacherCard(
-                                  image: 'assets/images/teacher_images/abu.png',
-                                  name: teacherNames[0],
-                                  percent: percentAndTotal[0].$1,
-                                  totalLectures: percentAndTotal[0].$2,
-                                ),
-                                TeacherCard(
-                                  image: 'assets/images/webdev.png',
-                                  name: teacherNames[1],
-                                  percent: percentAndTotal[1].$1,
-                                  totalLectures: percentAndTotal[1].$2,
-                                ),
-                                TeacherCard(
-                                  image:
-                                      'assets/images/teacher_images/ismail.png',
-                                  name: teacherNames[2],
-                                  percent: percentAndTotal[2].$1,
-                                  totalLectures: percentAndTotal[2].$2,
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                TeacherCard(
-                                  image:
-                                      'assets/images/teacher_images/neha.png',
-                                  name: teacherNames[3],
-                                  percent: percentAndTotal[3].$1,
-                                  totalLectures: percentAndTotal[3].$2,
-                                ),
-                                TeacherCard(
-                                  image:
-                                      'assets/images/teacher_images/saima.png',
-                                  name: teacherNames[4],
-                                  percent: percentAndTotal[4].$1,
-                                  totalLectures: percentAndTotal[4].$2,
-                                ),
-                                TeacherCard(
-                                  image:
-                                      'assets/images/teacher_images/shahid.png',
-                                  name: teacherNames[5],
-                                  percent: percentAndTotal[5].$1,
-                                  totalLectures: percentAndTotal[5].$2,
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                TeacherCard(
-                                  image: 'assets/images/webdev.png',
-                                  name: teacherNames[6],
-                                  percent: percentAndTotal[6].$1,
-                                  totalLectures: percentAndTotal[6].$2,
-                                ),
-                              ],
-                            ),
-                            SizedBox(width: 10),
+                            SizedBox(width: 10), // Left padding
+                            // Loop through the list, jumping by 3 (the number of items per column)
+                            for (int i = 0; i < teacherNames.length; i += 3)
+                              Column(
+                                children: [
+                                  // Inner loop: generate the cards for this specific column
+                                  // We ensure 'j' doesn't go out of bounds (j < teacherNames.length)
+                                  for (
+                                    int j = i;
+                                    j < i + 3 && j < teacherNames.length;
+                                    j++
+                                  )
+                                    TeacherCard(
+                                      // Assuming you have a list of image paths.
+                                      // If not, see the note below on how to handle images.
+                                      image:
+                                          'assets/images/teacher_images/${snapshot.data?[6][j]}.png',
+                                      name: teacherNames[j],
+                                      percent: percentAndTotal[j].$1,
+                                      totalLectures: percentAndTotal[j].$2,
+                                    ),
+                                ],
+                              ),
+
+                            SizedBox(width: 10), // Right padding
                           ],
                         ),
                       ),

@@ -4,7 +4,6 @@ import 'package:attendance/views/pages/add_attendance_page.dart';
 import 'package:attendance/views/pages/home_page.dart';
 import 'package:attendance/views/pages/profile_page.dart';
 import 'package:attendance/views/pages/result_page.dart';
-import 'package:attendance/views/pages/settings_page.dart';
 import 'package:attendance/views/widgets/navbar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,20 +37,6 @@ class WidgetTree extends StatelessWidget {
                 return Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode);
               },
             ),
-          ),
-          IconButton(
-            tooltip: 'Settings',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return SettingsPage();
-                  },
-                ),
-              );
-            },
-            icon: Icon(Icons.settings),
           ),
         ],
       ),

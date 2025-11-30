@@ -38,7 +38,13 @@ class TeacherCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(14),
-                child: Image.asset(image, fit: BoxFit.fitWidth),
+                child: Image.asset(
+                  image,
+                  fit: BoxFit.fitWidth,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset('assets/images/webdev.png');
+                  },
+                ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 10, left: 10, bottom: 5),
