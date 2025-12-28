@@ -24,7 +24,11 @@ class TeacherCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) {
-              return TeacherAttendancePage(name: name);
+              return TeacherAttendancePage(
+                name: name,
+                image: image,
+                totalLectures: totalLectures,
+              );
             },
           ),
         );

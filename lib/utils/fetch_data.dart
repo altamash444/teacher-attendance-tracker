@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:attendance/views/data/notifiers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<List<(int percent, int total)>> getPercentForTeachers(
@@ -13,6 +14,7 @@ Future<List<(int percent, int total)>> getPercentForTeachers(
       QuerySnapshot totalLectures = await FirebaseFirestore.instance
           .collection('lectures')
           .where('teacher_id', isEqualTo: teacherName)
+          .where('sem', isEqualTo: currentSemNotifier.value)
           .get();
 
       // Fetch present lectures
@@ -20,6 +22,7 @@ Future<List<(int percent, int total)>> getPercentForTeachers(
           .collection('lectures')
           .where('teacher_id', isEqualTo: teacherName)
           .where('present', isEqualTo: true)
+          .where('sem', isEqualTo: currentSemNotifier.value)
           .get();
 
       int total = totalLectures.docs.length;
@@ -43,10 +46,12 @@ Future<int> getAverageAttendance() async {
   try {
     QuerySnapshot totalLectures = await FirebaseFirestore.instance
         .collection('lectures')
+        .where('sem', isEqualTo: currentSemNotifier.value)
         .get();
     QuerySnapshot totalPresentLectures = await FirebaseFirestore.instance
         .collection('lectures')
         .where('present', isEqualTo: true)
+        .where('sem', isEqualTo: currentSemNotifier.value)
         .get();
     return (totalPresentLectures.docs.length / totalLectures.docs.length * 100)
         .toInt();
@@ -95,6 +100,28 @@ Future<List<String>> getLabNames() async {
   } catch (e) {
     log('Error fetching lab names: $e');
     return [];
+  }
+}
+
+Future<Map<String, String>> getSubjectDictionary() async {
+  try {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('subjects')
+        .get();
+
+    Map<String, String> names = {};
+
+    for (var doc in querySnapshot.docs) {
+      String? name = doc.get('in_short');
+      String? fullName = doc.get('name');
+      if (name != null && fullName != null) {
+        names[name.toLowerCase()] = fullName;
+      }
+    }
+    return names;
+  } catch (e) {
+    log('Error fetching full subject dictionary: $e');
+    return {};
   }
 }
 
@@ -148,5 +175,48 @@ Future<int> getCurrentSem() async {
   } catch (e) {
     log('Error fetching current sem: $e');
     return 4;
+  }
+}
+
+Future<DocumentSnapshot?> getTeacherFullData(String tid) async {
+  try {
+    final DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+        .collection('teachers')
+        .doc(tid)
+        .get();
+    return documentSnapshot;
+  } catch (e) {
+    log('Error fetching full teacher data: $e');
+    return null;
+  }
+}
+
+Future<QuerySnapshot?> getPresentLectures(String tid) async {
+  try {
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('lectures')
+        .where('teacher_id', isEqualTo: tid)
+        .where('present', isEqualTo: true)
+        .where('sem', isEqualTo: currentSemNotifier.value)
+        .get();
+    return querySnapshot;
+  } catch (e) {
+    log('Error fetching present lectures: $e');
+    return null;
+  }
+}
+
+Future<QuerySnapshot?> getAllLectures(String tid) async {
+  try {
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('lectures')
+        .where('teacher_id', isEqualTo: tid)
+        .orderBy('datetime', descending: true)
+        .where('sem', isEqualTo: currentSemNotifier.value)
+        .get();
+    return querySnapshot;
+  } catch (e) {
+    log('Error fetching all lectures: $e');
+    return null;
   }
 }

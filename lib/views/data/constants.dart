@@ -19,3 +19,8 @@ class KStrings {
   static const String val4 = 'Title is a Date';
   static const String val5 = 'Title is an Esperado';
 }
+
+class IconStyle {
+  static const double iconTextSpacing = 4;
+  static const double iconSize = 18;
+}

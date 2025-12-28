@@ -11,6 +11,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     Future<List<dynamic>> fetchAllData() async {
       return Future.wait([
+        // DON'T CHANGE THE ORDER (IT'S DESTRUCTIVE)
         getAverageAttendance(),
         getPercentForTeachers(getTeacherId()),
         getTeacherNames(),
@@ -18,6 +19,8 @@ class HomePage extends StatelessWidget {
         getSubjectNames(),
         getCurrentSem(),
         getTeacherId(),
+
+        // ALWAYS ADD FUNCTIONS HERE
       ]);
     }
 
@@ -106,8 +109,6 @@ class HomePage extends StatelessWidget {
                                     j++
                                   )
                                     TeacherCard(
-                                      // Assuming you have a list of image paths.
-                                      // If not, see the note below on how to handle images.
                                       image:
                                           'assets/images/teacher_images/${snapshot.data?[6][j]}.png',
                                       name: teacherNames[j],
